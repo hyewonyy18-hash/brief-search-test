@@ -6,71 +6,81 @@
 :root{--bg:#f6f7f9;--card:#fff;--fg:#1b1f24;--muted:#6b7280;--line:#e5e7eb;--up:#16a34a;--down:#dc2626;--accent:#2563eb;--chip:#eef2ff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1115;--card:#181b21;--fg:#e8eaed;--muted:#9aa0a6;--line:#2a2f37;--up:#22c55e;--down:#f87171;--accent:#60a5fa;--chip:#1e2533}}
 :root[data-theme="dark"]{--bg:#0f1115;--card:#181b21;--fg:#e8eaed;--muted:#9aa0a6;--line:#2a2f37;--up:#22c55e;--down:#f87171;--accent:#60a5fa;--chip:#1e2533}
-body.tg{--bg:var(--tg-theme-bg-color);--card:var(--tg-theme-secondary-bg-color);--fg:var(--tg-theme-text-color);--muted:var(--tg-theme-hint-color);--accent:var(--tg-theme-button-color);--line:var(--tg-theme-section-separator-color,var(--line))}
+body.tg{--bg:var(--tg-theme-bg-color);--card:var(--tg-theme-secondary-bg-color);--fg:var(--tg-theme-text-color);--muted:var(--tg-theme-hint-color);--accent:var(--tg-theme-button-color)}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
 .wrap{max-width:640px;margin:0 auto;padding:16px}
-.mock{font-size:12px;background:var(--chip);color:var(--muted);padding:8px 12px;border-radius:8px;margin-bottom:12px}
-h1{font-size:20px;margin:4px 0 2px}.sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+h1{font-size:20px;margin:4px 0 2px}.sub{color:var(--muted);font-size:13px;margin-bottom:10px}
 .search{position:sticky;top:0;background:var(--bg);padding:6px 0 10px;z-index:2}
 input{width:100%;font-size:16px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);outline:none}
 input:focus{border-color:var(--accent)}
 .tabs{display:flex;gap:8px;margin-top:10px}.tab{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 12px;border-radius:999px;font-size:13px;cursor:pointer}
 .tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0}
-.row{display:flex;align-items:center;gap:8px}.name{font-weight:600;flex:1;min-width:0}.tk{color:var(--muted);font-weight:400;font-size:13px}
-.pct{font-weight:700;font-variant-numeric:tabular-nums}.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--muted)}
+.row{display:flex;align-items:center;gap:8px}.name{font-weight:600;flex:1;min-width:0;overflow-wrap:anywhere}.tk{color:var(--muted);font-weight:400;font-size:13px}
+.pct{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--muted)}
 .idio{font-size:13px;color:var(--muted);margin-top:2px}.idio b{font-variant-numeric:tabular-nums}
 .reason{margin-top:6px;font-size:14px}.reason a{color:var(--accent);font-size:12px;text-decoration:none}
 .na{color:var(--muted);font-size:13px}
 .star{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:0 2px;line-height:1}.star.on{color:#f5b301}
-.empty{color:var(--muted);text-align:center;padding:24px 0;font-size:14px}
+.empty,.more{color:var(--muted);text-align:center;padding:16px 0;font-size:14px}
 .note{color:var(--muted);font-size:12px;margin-top:16px;line-height:1.6}
 </style></head><body><div class="wrap">
-<div class="mock">시안(mockup) · 미국 2026-11-06 세션 실데이터 · 예시 종목 35개 · 실제 서비스에서는 S&P500 등 수백 종목</div>
 <h1>🔎 종목 검색</h1>
-<div class="sub">또미의 MORNING BRIEF · 이름이나 티커로 검색하고 ☆로 관심종목 저장</div>
-<div class="search"><input id="q" placeholder="예: 엔비디아, NVDA, 반도체3배" autocomplete="off">
+<div class="sub" id="sub">데이터 불러오는 중…</div>
+<div class="search"><input id="q" placeholder="예: 엔비디아, NVDA, 스페이스X" autocomplete="off">
 <div class="tabs"><button class="tab on" data-v="all">전체</button><button class="tab" data-v="fav">⭐ 내 관심종목 <span id="fc"></span></button></div></div>
 <div id="list"></div>
 <div class="note">
-• <b>고유</b> = 시장(SPY)·업종 ETF 영향을 뺀 기업 자체 등락 추정치 (2요인 모델, Python 계산)<br>
-• <b>요인</b>은 그날 브리프에 들어간 종목만 제공 (Claude 조사 비용 때문). 나머지는 숫자만 표시<br>
-• 관심종목은 텔레그램 계정에 저장되어 휴대폰·PC 텔레그램에서 같이 보입니다 (텔레그램 밖 브라우저에서는 이 기기에만 저장)
+• <b>고유</b> = 시장(S&amp;P500)·업종 ETF 영향을 뺀 기업 자체 등락 추정치 (2요인 모델, 프로그램 계산)<br>
+• <b>요인</b>은 그날 브리프에서 조사한 종목만 제공. 조사했지만 원인을 확인하지 못하면 "뚜렷한 단일 촉매 확인 안 됨"<br>
+• 검색 대상: S&amp;P500 + 한국인 보유·매수 상위 개별 종목 (ETF 제외)<br>
+• 관심종목은 텔레그램 계정에 저장되어 휴대폰·PC 텔레그램에서 같이 보입니다<br>
+• 정보 제공 목적이며 투자 권유가 아닙니다
 </div></div>
 <script>
-const D=[{"t": "NVDA", "n": "엔비디아", "c": 186.64, "p": 2.78, "i": 1.1, "bm": "SMH", "r": "전날 큰 폭 하락 뒤 반도체 반등에 동반해 올랐습니다.", "s": "Yahoo Finance", "u": "https://finance.yahoo.com/markets/article/nvidia-amd-micron-sandsik-lead-chip-sector-higher-134336542.html"}, {"t": "MSFT", "n": "마이크로소프트", "c": 530.61, "p": -0.99, "i": -1.29, "bm": "IGV", "r": null, "s": null, "u": null}, {"t": "AAPL", "n": "애플", "c": 342.37, "p": -0.52, "i": -0.46, "bm": "XLK", "r": null, "s": null, "u": null}, {"t": "GOOGL", "n": "구글", "c": 284.78, "p": 0.78, "i": 0.38, "bm": "XLC", "r": null, "s": null, "u": null}, {"t": "AMZN", "n": "아마존", "c": 259.3, "p": -0.35, "i": -0.23, "bm": "XLY", "r": null, "s": null, "u": null}, {"t": "META", "n": "메타", "c": 610.15, "p": 0.84, "i": 0.03, "bm": "XLC", "r": null, "s": null, "u": null}, {"t": "TSLA", "n": "테슬라", "c": 358.22, "p": 4.23, "i": 4.0, "bm": "XLY", "r": null, "s": null, "u": null}, {"t": "AVGO", "n": "브로드컴", "c": 293.69, "p": 0.74, "i": -1.69, "bm": "SMH", "r": null, "s": null, "u": null}, {"t": "AMD", "n": "AMD", "c": 449.04, "p": 11.04, "i": 6.18, "bm": "SMH", "r": "실적과 전망이 좋았는데도 전날 과하게 빠졌다는 인식에 매수세가 몰렸습니다.", "s": "Yahoo Finance (Motley Fool)", "u": "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-nov-6-222502683.html"}, {"t": "MU", "n": "마이크론", "c": 690.0, "p": 5.12, "i": -1.59, "bm": "SMH", "r": "전날 크게 빠진 반도체주의 반등에 동참했습니다. 의회 규제 우려는 아직 풀리지 않았습니다.", "s": "Yahoo Finance", "u": "https://finance.yahoo.com/markets/article/nvidia-amd-micron-sandsik-lead-chip-sector-higher-134336542.html"}, {"t": "TSM", "n": "TSMC", "c": 375.44, "p": 6.33, "i": 3.57, "bm": "SMH", "r": "엔비디아 요청으로 3D D램 생산을 검토한다는 보도에 올랐고, 회사는 논평을 거부했습니다.", "s": "The Next Web (The Information 인용)", "u": "https://thenextweb.com/news/tsmc-3d-dram-memory-chips-nvidia"}, {"t": "ASML", "n": "ASML", "c": 1424.75, "p": 5.02, "i": 1.29, "bm": "SMH", "r": "전날 급락에 대한 반발 매수가 유럽 거래에 이어 미국에서도 이어졌습니다.", "s": "CNBC", "u": "https://www.cnbc.com/2026/11/06/tech-stocks-sk-hynix-samsung-softbank.html"}, {"t": "ARM", "n": "ARM", "c": 174.62, "p": 4.74, "i": -0.28, "bm": "SMH", "r": "전날 급락 뒤 반도체 설계주가 반등했고, 최근 실적에서 데이터센터 로열티가 늘었습니다.", "s": "TradingView (GuruFocus)", "u": "https://www.tradingview.com/news/gurufocus:e1101c159094b:0-arm-holdings-stocks-rise-4-01-as-data-center-royalties-double/"}, {"t": "PLTR", "n": "팔란티어", "c": 160.38, "p": 3.48, "i": 3.51, "bm": "IGV", "r": null, "s": null, "u": null}, {"t": "ORCL", "n": "오라클", "c": 116.1, "p": 0.82, "i": 0.91, "bm": "IGV", "r": null, "s": null, "u": null}, {"t": "TQQQ", "n": "TQQQ(나스닥3배)", "c": 52.25, "p": 3.53, "i": null, "bm": null, "r": null, "s": null, "u": null}, {"t": "SOXL", "n": "SOXL(반도체3배)", "c": 45.97, "p": 12.48, "i": null, "bm": null, "r": null, "s": null, "u": null}, {"t": "TSLL", "n": "TSLL(테슬라2배)", "c": 8.8, "p": 8.64, "i": null, "bm": null, "r": null, "s": null, "u": null}, {"t": "IONQ", "n": "아이온큐", "c": 32.62, "p": 23.42, "i": 21.33, "bm": "XLK", "r": null, "s": null, "u": null}, {"t": "COIN", "n": "코인베이스", "c": 134.76, "p": -1.51, "i": -1.55, "bm": "XLF", "r": "비트코인 약세와 모건스탠리의 비관적 전망이 부담으로 이어졌습니다.", "s": "Bloomberg", "u": "https://www.bloomberg.com/news/articles/2026-11-06/coinbase-bear-morgan-stanley-says-earnings-recovery-less-certain"}, {"t": "JPM", "n": "JP모건", "c": 334.49, "p": -0.84, "i": -0.22, "bm": "XLF", "r": null, "s": null, "u": null}, {"t": "KO", "n": "코카콜라", "c": 95.67, "p": -0.06, "i": 1.02, "bm": "XLP", "r": null, "s": null, "u": null}, {"t": "NFLX", "n": "넷플릭스", "c": 63.41, "p": -3.28, "i": -3.55, "bm": "XLC", "r": null, "s": null, "u": null}, {"t": "LLY", "n": "일라이릴리", "c": 1354.0, "p": -0.79, "i": -0.59, "bm": "XLV", "r": null, "s": null, "u": null}, {"t": "XOM", "n": "엑슨모빌", "c": 165.87, "p": 0.34, "i": 0.4, "bm": "XLE", "r": null, "s": null, "u": null}, {"t": "WMT", "n": "월마트", "c": 125.52, "p": -1.72, "i": -0.25, "bm": "XLP", "r": null, "s": null, "u": null}, {"t": "COST", "n": "코스트코", "c": 1053.56, "p": -1.13, "i": 0.05, "bm": "XLP", "r": null, "s": null, "u": null}, {"t": "BAC", "n": "뱅크오브아메리카", "c": 49.42, "p": -0.68, "i": -0.07, "bm": "XLF", "r": null, "s": null, "u": null}, {"t": "DIS", "n": "디즈니", "c": 116.75, "p": -0.4, "i": -0.9, "bm": "XLC", "r": null, "s": null, "u": null}, {"t": "QCOM", "n": "퀄컴", "c": 165.41, "p": 5.52, "i": 3.53, "bm": "SMH", "r": null, "s": null, "u": null}, {"t": "INTC", "n": "인텔", "c": 56.28, "p": 7.71, "i": 2.37, "bm": "SMH", "r": null, "s": null, "u": null}, {"t": "SBUX", "n": "스타벅스", "c": 105.41, "p": -0.71, "i": -0.64, "bm": "XLY", "r": null, "s": null, "u": null}, {"t": "UBER", "n": "우버", "c": 68.59, "p": -0.28, "i": -0.32, "bm": "IGV", "r": null, "s": null, "u": null}, {"t": "SPY", "n": "S&P500 ETF", "c": 735.29, "p": 0.31, "i": null, "bm": null, "r": "반도체와 기술주가 반등을 이끌었지만 오른 종목보다 내린 종목이 많았습니다.", "s": "Yahoo Finance", "u": "https://finance.yahoo.com/markets/live/stock-market-today-friday-november-6-dow-sp-500-nasdaq-jobs-report-earnings-135953863.html"}, {"t": "QQQ", "n": "나스닥100 ETF", "c": 656.1, "p": 1.4, "i": null, "bm": null, "r": null, "s": null, "u": null}];
 const TG=window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData?Telegram.WebApp:null;
 const CS=TG&&TG.CloudStorage&&TG.isVersionAtLeast&&TG.isVersionAtLeast("6.9")?TG.CloudStorage:null;
 if(TG){document.body.classList.add("tg");TG.ready();TG.expand();}
-let fav=[];try{fav=JSON.parse(localStorage.getItem("mb_fav")||"[]")}catch(e){}
+const TOP_N=30;
+let D=[],fav=[],view="all";
+try{fav=JSON.parse(localStorage.getItem("mb_fav")||"[]")}catch(e){}
 if(CS)CS.getItem("mb_fav",(err,v)=>{if(!err&&v){try{fav=JSON.parse(v);render()}catch(e){}}});
-let view="all";
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const cls=p=>Math.abs(p)<0.05?"flat":p>0?"up":"down";
 const sg=(p,u)=>(Math.abs(p)<0.05?"0.0":(p>0?"+":"")+p.toFixed(1))+u;
+const norm=s=>String(s||"").toLowerCase().replace(/\s+/g,"");
 function save(){const v=JSON.stringify(fav);try{localStorage.setItem("mb_fav",v)}catch(e){}if(CS)CS.setItem("mb_fav",v);if(TG&&TG.HapticFeedback)TG.HapticFeedback.selectionChanged();}
 function card(r){
  const on=fav.includes(r.t);
- const idio=r.i===null?`<div class="idio">ETF·지수는 고유 등락을 계산하지 않음</div>`
+ const idio=r.i===null||r.i===undefined?`<div class="idio">고유 등락 계산 안 됨 (이력 부족)</div>`
   :`<div class="idio">고유 <b class="${cls(r.i)}">${sg(r.i,"%p")}</b> · 업종 기준 ${esc(r.bm)}</div>`;
  const rs=r.r?`<div class="reason">→ ${esc(r.r)} ${r.u?`<a href="${esc(r.u)}" target="_blank" rel="noopener">${esc(r.s||"출처")}</a>`:""}</div>`
-  :`<div class="reason na">→ 오늘 브리프에 포함되지 않아 요인 분석 없음</div>`;
- return `<div class="card"><div class="row"><button class="star ${on?"on":""}" data-t="${r.t}" aria-label="관심종목">${on?"★":"☆"}</button>
- <div class="name">${esc(r.n)} <span class="tk">${r.t}</span></div><div class="pct ${cls(r.p)}">${sg(r.p,"%")}</div></div>${idio}${rs}</div>`;
+  :`<div class="reason na">→ 오늘 요인 조사 대상이 아니에요</div>`;
+ const title=r.k?`${esc(r.k)} <span class="tk">${esc(r.t)}</span>`:`${esc(r.n)} <span class="tk">${esc(r.t)}</span>`;
+ return `<div class="card"><div class="row"><button class="star ${on?"on":""}" data-t="${esc(r.t)}" aria-label="관심종목">${on?"★":"☆"}</button>
+ <div class="name">${title}</div><div class="pct ${cls(r.p)}">${sg(r.p,"%")}</div></div>${idio}${rs}</div>`;
 }
 function render(){
- const q=$("#q").value.trim().toLowerCase();
- let rows=D.filter(r=>!q||r.t.toLowerCase().includes(q)||r.n.toLowerCase().includes(q));
+ const q=norm($("#q").value);
+ let rows=D;
+ if(q)rows=D.filter(r=>norm(r.t).includes(q)||norm(r.n).includes(q)||norm(r.k).includes(q))
+          .sort((a,b)=>(norm(b.t)===q)-(norm(a.t)===q));
  if(view==="fav")rows=rows.filter(r=>fav.includes(r.t));
- else if(!q)rows=[...rows].sort((a,b)=>Math.abs(b.p)-Math.abs(a.p));
  $("#fc").textContent=fav.length?`(${fav.length})`:"";
- $("#list").innerHTML=rows.length?rows.map(card).join(""):
-  `<div class="empty">${view==="fav"?"☆를 눌러 관심종목을 추가해 보세요":"검색 결과가 없습니다 (시안에는 35개 종목만 있어요)"}</div>`;
+ const cut=view==="all"&&!q&&rows.length>TOP_N;
+ const shown=cut?rows.slice(0,TOP_N):rows.slice(0,200);
+ $("#list").innerHTML=shown.length?shown.map(card).join("")+(cut?`<div class="more">오늘 가장 크게 움직인 ${TOP_N}개 · 전체 ${D.length}개는 검색해 보세요</div>`:""):
+  `<div class="empty">${view==="fav"?"☆를 눌러 관심종목을 추가해 보세요":"검색 결과가 없어요 (S&P500·한국인 인기 개별 종목만 있어요)"}</div>`;
 }
 $("#q").addEventListener("input",render);
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));b.classList.add("on");view=b.dataset.v;render()});
 $("#list").addEventListener("click",e=>{const b=e.target.closest(".star");if(!b)return;const t=b.dataset.t;
  fav=fav.includes(t)?fav.filter(x=>x!==t):[...fav,t];save();render()});
-render();
+fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(j=>{
+ D=j.items||[];
+ const d=String(j.session_date||"");
+ $("#sub").textContent=`미국 ${d.slice(5).replace("-","/")} 장 기준 · ${D.length}개 종목 · 이름이나 티커로 검색, ☆로 관심종목 저장`;
+ render();
+}).catch(()=>{$("#sub").textContent="데이터를 불러오지 못했어요. 잠시 후 다시 열어 주세요.";});
 </script></body></html>
