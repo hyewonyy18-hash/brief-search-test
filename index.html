@@ -38,6 +38,7 @@ input:focus{border-color:var(--accent)}
 • <b>설명 3단계</b> (고유 등락 크기 기준): 1%p 미만 = 시장·업종 흐름 문장 · 1~3%p = 흐름 대비 강세·약세 + 관련 뉴스 · 3%p 이상 = 기업 자체 움직임<br>
 • <b>AI 원인 조사</b>: 등락률 ±3% 이상 또는 고유 ±3%p 이상 종목 (출처 확인, 못 찾으면 "뚜렷한 단일 촉매 확인 안 됨")<br>
 • 📊 문장과 숫자는 프로그램이 계산, → 요인은 AI 가 조사하고 프로그램이 검증<br>
+• <b>관련 뉴스</b>는 그 종목에 연결된 해당 거래일 기사로, AI 검증을 거치지 않은 참고 자료예요. 원인으로 확인된 것은 아니에요<br>
 • 검색 대상: S&amp;P500 + 한국인 보유·매수 상위 개별 종목 (ETF 제외)<br>
 • 관심종목은 텔레그램 계정에 저장되어 휴대폰·PC 텔레그램에서 같이 보입니다<br>
 • 정보 제공 목적이며 투자 권유가 아닙니다
@@ -65,7 +66,7 @@ function card(r){
  if(r.r)rs=`<div class="reason">→ ${esc(r.r)} ${r.u?`<a href="${esc(r.u)}" target="_blank" rel="noopener">${esc(r.s||"출처")}</a>`:""}</div>`;
  else if(r.rs==="pending")rs=`<div class="reason na">→ 요인 조사 중이에요 (잠시 후 다시 열어 보세요)</div>`;
  else if(Math.abs(r.p)>=3||Math.abs(r.i||0)>=3)rs=`<div class="reason na">→ 오늘 요인 조사 대상이 아니에요</div>`;
- const nw=(r.nw||[]).length?`<div class="news"><span class="lb">관련 뉴스 (원인으로 확인된 것은 아니에요)</span>${r.nw.map(n=>`<a href="${esc(n.u)}" target="_blank" rel="noopener">· ${esc(n.h)} <span class="src">${esc([n.d,n.s].filter(Boolean).join(" · "))}</span></a>`).join("")}</div>`:"";
+ const nw=(r.nw||[]).length?`<div class="news"><span class="lb">관련 뉴스</span>${r.nw.map(n=>`<a href="${esc(n.u)}" target="_blank" rel="noopener">· ${esc(n.h)} <span class="src">${esc([n.d,n.s].filter(Boolean).join(" · "))}</span></a>`).join("")}</div>`:"";
  const title=r.k?`${esc(r.k)} <span class="tk">${esc(r.t)}</span>`:`${esc(r.n)} <span class="tk">${esc(r.t)}</span>`;
  return `<div class="card"><div class="row"><button class="star ${on?"on":""}" data-t="${esc(r.t)}" aria-label="관심종목">${on?"★":"☆"}</button>
  <div class="name">${title}</div><div class="pct ${cls(r.p)}">${sg(r.p,"%")}</div></div>${idio}${x}${rs}${nw}</div>`;
