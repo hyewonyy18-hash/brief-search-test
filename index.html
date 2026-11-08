@@ -21,6 +21,9 @@ input:focus{border-color:var(--accent)}
 .idio{font-size:13px;color:var(--muted);margin-top:2px}.idio b{font-variant-numeric:tabular-nums}
 .reason{margin-top:6px;font-size:14px}.reason a{color:var(--accent);font-size:12px;text-decoration:none}
 .na{color:var(--muted);font-size:13px}
+.x{font-size:13px;color:var(--muted);margin-top:4px}
+.news{margin-top:6px;font-size:13px;line-height:1.45}.news .lb{color:var(--muted);font-size:12px}
+.news a{color:var(--accent);text-decoration:none;display:block;overflow-wrap:anywhere}.news .src{color:var(--muted);font-size:11px}
 .star{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:0 2px;line-height:1}.star.on{color:#f5b301}
 .empty,.more{color:var(--muted);text-align:center;padding:16px 0;font-size:14px}
 .note{color:var(--muted);font-size:12px;margin-top:16px;line-height:1.6}
@@ -32,7 +35,8 @@ input:focus{border-color:var(--accent)}
 <div id="list"></div>
 <div class="note">
 • <b>고유</b> = 시장(S&amp;P500)·업종 ETF 영향을 뺀 기업 자체 등락 추정치 (2요인 모델, 프로그램 계산)<br>
-• <b>요인</b>은 그날 브리프에서 조사한 종목만 제공. 조사했지만 원인을 확인하지 못하면 "뚜렷한 단일 촉매 확인 안 됨"<br>
+• <b>설명 3단계</b> (고유 등락 크기 기준): 1%p 미만 = 시장·업종 흐름 문장 · 1~3%p = 흐름 대비 강세·약세 + 관련 뉴스 · 3%p 이상 = AI 원인 조사 (출처 확인, 못 찾으면 "뚜렷한 단일 촉매 확인 안 됨")<br>
+• 📊 문장과 숫자는 프로그램이 계산, → 요인은 AI 가 조사하고 프로그램이 검증<br>
 • 검색 대상: S&amp;P500 + 한국인 보유·매수 상위 개별 종목 (ETF 제외)<br>
 • 관심종목은 텔레그램 계정에 저장되어 휴대폰·PC 텔레그램에서 같이 보입니다<br>
 • 정보 제공 목적이며 투자 권유가 아닙니다
@@ -55,11 +59,15 @@ function card(r){
  const on=fav.includes(r.t);
  const idio=r.i===null||r.i===undefined?`<div class="idio">고유 등락 계산 안 됨 (이력 부족)</div>`
   :`<div class="idio">고유 <b class="${cls(r.i)}">${sg(r.i,"%p")}</b> · 업종 기준 ${esc(r.bm)}</div>`;
- const rs=r.r?`<div class="reason">→ ${esc(r.r)} ${r.u?`<a href="${esc(r.u)}" target="_blank" rel="noopener">${esc(r.s||"출처")}</a>`:""}</div>`
-  :`<div class="reason na">→ 오늘 요인 조사 대상이 아니에요</div>`;
+ const x=r.x?`<div class="x">📊 ${esc(r.x)}</div>`:"";
+ let rs="";
+ if(r.r)rs=`<div class="reason">→ ${esc(r.r)} ${r.u?`<a href="${esc(r.u)}" target="_blank" rel="noopener">${esc(r.s||"출처")}</a>`:""}</div>`;
+ else if(r.rs==="pending")rs=`<div class="reason na">→ 요인 조사 중이에요 (잠시 후 다시 열어 보세요)</div>`;
+ else if(r.tr===3)rs=`<div class="reason na">→ 오늘 요인 조사 대상이 아니에요</div>`;
+ const nw=(r.nw||[]).length?`<div class="news"><span class="lb">관련 뉴스 (원인으로 확인된 것은 아니에요)</span>${r.nw.map(n=>`<a href="${esc(n.u)}" target="_blank" rel="noopener">· ${esc(n.h)} <span class="src">${esc(n.s||"")}</span></a>`).join("")}</div>`:"";
  const title=r.k?`${esc(r.k)} <span class="tk">${esc(r.t)}</span>`:`${esc(r.n)} <span class="tk">${esc(r.t)}</span>`;
  return `<div class="card"><div class="row"><button class="star ${on?"on":""}" data-t="${esc(r.t)}" aria-label="관심종목">${on?"★":"☆"}</button>
- <div class="name">${title}</div><div class="pct ${cls(r.p)}">${sg(r.p,"%")}</div></div>${idio}${rs}</div>`;
+ <div class="name">${title}</div><div class="pct ${cls(r.p)}">${sg(r.p,"%")}</div></div>${idio}${x}${rs}${nw}</div>`;
 }
 function render(){
  const q=norm($("#q").value);
@@ -80,7 +88,8 @@ $("#list").addEventListener("click",e=>{const b=e.target.closest(".star");if(!b)
 fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(j=>{
  D=j.items||[];
  const d=String(j.session_date||"");
- $("#sub").textContent=`미국 ${d.slice(5).replace("-","/")} 장 기준 · ${D.length}개 종목 · 이름이나 티커로 검색, ☆로 관심종목 저장`;
+ const st=j.research==="running"?" · 요인 조사 진행 중":"";
+ $("#sub").textContent=`미국 ${d.slice(5).replace("-","/")} 장 기준 · ${D.length}개 종목${st} · 이름이나 티커로 검색, ☆로 관심종목 저장`;
  render();
 }).catch(()=>{$("#sub").textContent="데이터를 불러오지 못했어요. 잠시 후 다시 열어 주세요.";});
 </script></body></html>
