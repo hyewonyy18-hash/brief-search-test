@@ -19,7 +19,6 @@ input:focus{border-color:var(--accent)}
 .row{display:flex;align-items:center;gap:8px}.name{font-weight:600;flex:1;min-width:0;overflow-wrap:anywhere}.tk{color:var(--muted);font-weight:400;font-size:13px}
 .pct{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}.up{color:var(--up)}.down{color:var(--down)}.flat{color:var(--muted)}
 .idio{font-size:13px;color:var(--muted);margin-top:2px}.idio b{font-variant-numeric:tabular-nums}
-.lowr2{font-size:11px;color:var(--muted);opacity:.85;white-space:nowrap}
 .reason{margin-top:6px;font-size:14px}.reason a{color:var(--accent);font-size:12px;text-decoration:none}
 .na{color:var(--muted);font-size:13px}
 .x{font-size:13px;color:var(--muted);margin-top:4px}
@@ -39,7 +38,6 @@ input:focus{border-color:var(--accent)}
 • <b>설명 3단계</b> (고유 등락 크기 기준): 1%p 미만 = 시장·업종 흐름 문장 · 1~3%p = 흐름 대비 강세·약세 + 관련 뉴스 · 3%p 이상 = 기업 자체 움직임<br>
 • <b>AI 원인 조사</b>: 등락률 ±3% 이상 또는 고유 ±3%p 이상 종목 (출처 확인, 못 찾으면 "뚜렷한 단일 촉매 확인 안 됨")<br>
 • 📊 문장과 숫자는 프로그램이 계산, → 요인은 AI 가 조사하고 프로그램이 검증<br>
-• <b>업종 비교 설명력 낮음</b>: 평소 이 종목이 같은 업종·시장과 잘 같이 움직이지 않아(설명력 R² 0.2 미만) 고유 등락 숫자는 참고로만 보세요<br>
 • <b>관련 뉴스</b>는 그 종목에 연결된 해당 거래일 기사로, AI 검증을 거치지 않은 참고 자료예요. 원인으로 확인된 것은 아니에요<br>
 • 검색 대상: S&amp;P500 + 한국인 보유·매수 상위 개별 종목 (ETF 제외)<br>
 • 관심종목은 텔레그램 계정에 저장되어 휴대폰·PC 텔레그램에서 같이 보입니다<br>
@@ -50,7 +48,7 @@ const TG=window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData?Telegram.Web
 const CS=TG&&TG.CloudStorage&&TG.isVersionAtLeast&&TG.isVersionAtLeast("6.9")?TG.CloudStorage:null;
 if(TG){document.body.classList.add("tg");TG.ready();TG.expand();}
 const TOP_N=30;
-let D=[],fav=[],view="all",LOW_R2=0.2;
+let D=[],fav=[],view="all";
 try{fav=JSON.parse(localStorage.getItem("mb_fav")||"[]")}catch(e){}
 if(CS)CS.getItem("mb_fav",(err,v)=>{if(!err&&v){try{fav=JSON.parse(v);render()}catch(e){}}});
 const $=s=>document.querySelector(s);
@@ -62,7 +60,7 @@ function save(){const v=JSON.stringify(fav);try{localStorage.setItem("mb_fav",v)
 function card(r){
  const on=fav.includes(r.t);
  const idio=r.i===null||r.i===undefined?`<div class="idio">고유 등락 계산 안 됨 (이력 부족)</div>`
-  :`<div class="idio">고유 <b class="${cls(r.i)}">${sg(r.i,"%p")}</b> · 업종 기준 ${esc(r.bm)}${r.q!=null&&r.q<LOW_R2?` <span class="lowr2">· 업종 비교 설명력 낮음</span>`:""}</div>`;
+  :`<div class="idio">고유 <b class="${cls(r.i)}">${sg(r.i,"%p")}</b> · 업종 기준 ${esc(r.bm)}</div>`;
  const x=r.x?`<div class="x">📊 ${esc(r.x)}</div>`:"";
  let rs="";
  if(r.r)rs=`<div class="reason">→ ${esc(r.r)} ${r.u?`<a href="${esc(r.u)}" target="_blank" rel="noopener">${esc(r.s||"출처")}</a>`:""}</div>`;
@@ -91,7 +89,6 @@ $("#list").addEventListener("click",e=>{const b=e.target.closest(".star");if(!b)
  fav=fav.includes(t)?fav.filter(x=>x!==t):[...fav,t];save();render()});
 fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(j=>{
  D=j.items||[];
- if(typeof j.low_r2==="number")LOW_R2=j.low_r2;
  const d=String(j.session_date||"");
  const st=j.research==="running"?" · 요인 조사 진행 중":"";
  $("#sub").textContent=`미국 ${d.slice(5).replace("-","/")} 장 기준 · ${D.length}개 종목${st} · 이름이나 티커로 검색, ☆로 관심종목 저장`;
